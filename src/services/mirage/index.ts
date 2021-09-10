@@ -4,13 +4,13 @@ type User = {
   name: string;
   email: string;
   createAt: string;
-  // senha: string;
+  password: string;
 };
 type Todo = {
   name: string;
   email: string;
   createAt: string;
-  // senha: string;
+  password: string;
 };
 export function makeServer() {
   const server = createServer({
@@ -26,9 +26,9 @@ export function makeServer() {
         email() {
           return faker.internet.email().toLowerCase();
         },
-        //  senha() {
-        //         return faker.internet.senha().toLowerCase();
-        //       },
+        password() {
+          return faker.internet.password().toLowerCase();
+        },
         createdAt() {
           return faker.date.recent(10);
         },
@@ -60,10 +60,15 @@ export function makeServer() {
         console.log("attrs", attrs);
         return schema.create("todo", attrs);
       });
-
       this.get("/todos", (schema, request) => {
         return schema.all("todo");
       });
+      this.post("/auth", (schema, request) => {
+        let attrs = JSON.parse(request.requestBody);
+        console.log("attrs", attrs);
+        return { autorizado: schema.findBy("todo", attrs) != null };
+      });
+
       this.namespace = "";
       this.passthrough();
     },

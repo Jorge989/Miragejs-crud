@@ -14,18 +14,21 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { RiEyeFill, RiEyeOffFill } from "react-icons/ri";
 import { yupResolver } from "@hookform/resolvers/yup";
 import router, { useRouter } from "next/router";
-import React from "react";
+import React, { useState } from "react";
 type SignInFormatData = {
   email: string;
   password: string;
 };
 import { Input } from "../../components/Input";
+import { api } from "../../services/api";
 const signInFormSchema = yup.object().shape({
   email: yup.string().required("E-mail obrigatório").email("E-mail inválido"),
   password: yup.string().required("Senha obrigatória"),
 });
 
 export default function Home() {
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
   const [show, setShow] = React.useState(false);
   const handleClickPassword = () => setShow(!show);
   const {
@@ -35,11 +38,26 @@ export default function Home() {
   } = useForm({
     resolver: yupResolver(signInFormSchema),
   });
+
   const handleSignIn: SubmitHandler<SignInFormatData> = async (values) => {
+    try {
+      const user = {
+        email: email,
+        password: senha,
+      };
+      const response = await api.post("auth", user);
+      console.log("awui", user);
+      console.log("aqui2", response);
+
+      console.log("aqui3", response.data);
+      return response.data.user;
+    } catch (err) {
+      console.log("aqui", err);
+    }
     await new Promise((resolve) => setTimeout(resolve, 3000));
 
     console.log(values);
-    router.push("/dashboard");
+    // router.push("/dashboard");
   };
   return (
     <Flex
@@ -89,6 +107,9 @@ export default function Home() {
           size="md"
           error={errors.email}
           {...register("email")}
+          onChange={(e) => {
+            setEmail(e.target.value);
+          }}
           mb="2"
           name="email"
         />
@@ -102,6 +123,9 @@ export default function Home() {
             error={errors.password}
             {...register("password")}
             name="password"
+            onChange={(e) => {
+              setSenha(e.target.value);
+            }}
             mb="2"
             type={show ? "text" : "password"}
           />

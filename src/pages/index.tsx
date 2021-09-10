@@ -63,7 +63,7 @@ export default function Home() {
     try {
       const user = {
         email: email,
-        // password: senha,
+        password: senha,
         name: nome,
         created_at: new Date(),
       };
@@ -78,7 +78,7 @@ export default function Home() {
     }
 
     await new Promise((resolve) => setTimeout(resolve, 3000));
-    // router.push("/login");
+    router.push("/login");
   };
   useEffect(() => {
     api.get(`todos`).then((response) => {
