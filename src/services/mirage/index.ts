@@ -55,8 +55,15 @@ export function makeServer() {
       this.post("/users");
 
       this.get("/users/:id");
-      this.post("/todos");
-      this.get("/todos");
+      this.post("/todos", (schema, request) => {
+        let attrs = JSON.parse(request.requestBody);
+        console.log("attrs", attrs);
+        return schema.create("todo", attrs);
+      });
+
+      this.get("/todos", (schema, request) => {
+        return schema.all("todo");
+      });
       this.namespace = "";
       this.passthrough();
     },
