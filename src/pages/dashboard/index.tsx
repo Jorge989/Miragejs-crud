@@ -33,6 +33,7 @@ const Chart = dynamic(() => import("react-apexcharts"), {
 
 export default function Dashboard() {
   const [page, setPage] = useState(1);
+
   const { data, isLoading, isFetching, error } = useUsers(page);
 
   const isWideVersion = useBreakpointValue({
@@ -162,18 +163,20 @@ export default function Dashboard() {
                             </Td>
                             {isWideVersion && <Td>{user.createdAt}1</Td>}
                             <Td px={["4", "4,", "6"]}>
-                              <Button
-                                as="a"
-                                size="sm"
-                                fontSize="sm"
-                                colorScheme="twitter"
-                                cursor="pointer"
-                                leftIcon={
-                                  <Icon as={RiPencilFill} fontSize="17" />
-                                }
-                              >
-                                Editar
-                              </Button>
+                              <Link href={`edit/${user.id}`} passHref>
+                                <Button
+                                  as="a"
+                                  size="sm"
+                                  fontSize="sm"
+                                  colorScheme="twitter"
+                                  cursor="pointer"
+                                  leftIcon={
+                                    <Icon as={RiPencilFill} fontSize="17" />
+                                  }
+                                >
+                                  Editar
+                                </Button>
+                              </Link>
                             </Td>
                           </Tr>
                         );

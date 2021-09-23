@@ -63,6 +63,11 @@ export function makeServer() {
       this.get("/todos", (schema, request) => {
         return schema.all("todo");
       });
+      this.get("/todos/:id", (schema, request) => {
+        let id = request.params.id;
+
+        return schema.find("todo", id);
+      });
       this.post("/auth", (schema, request) => {
         let attrs = JSON.parse(request.requestBody);
         console.log("attrs", attrs);

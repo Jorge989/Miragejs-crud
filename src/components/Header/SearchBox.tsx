@@ -16,7 +16,7 @@ export function SearchBox() {
       borderRadius="full"
     >
       <Input
-        color="gray.50"
+        color="gray.900"
         variant="unstyled"
         placeholder="Buscar na plataforma"
         px="4"

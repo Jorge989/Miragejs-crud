@@ -1,3 +1,4 @@
+import { GetStaticProps } from "next";
 import {
   Box,
   Flex,
@@ -26,13 +27,18 @@ import { queryClient } from "../../services/queryClient";
 import { useRouter } from "next/dist/client/router";
 import React, { useState } from "react";
 import { RiEyeFill, RiEyeOffFill } from "react-icons/ri";
+
 type CreateUserFormData = {
   name: string;
   email: string;
   password_confirmation: string;
   password: string;
 };
-
+interface IEmployee {
+  nome: string;
+  email: string;
+  senha: string;
+}
 const createUserFormSchema = yup.object().shape({
   name: yup.string().required("Nome obrigatório"),
   email: yup.string().required("E-mail obrigátorio").email("E-mail inválido"),
@@ -42,11 +48,23 @@ const createUserFormSchema = yup.object().shape({
     .required("Senha obrigatória")
     .oneOf([null, yup.ref("password")], "As senhas precisam ser iguais"),
 });
+
+export const getUser = async (userId: string) => {
+  const users = await api.get(`todos/${userId}`).then(({ data }) => {
+    return data;
+  });
+  return users;
+};
 export default function CreateUser() {
   const [senha, setSenha] = useState("");
+  const [nome, setNome] = useState("");
+  const [email, setEmail] = useState("");
+
+  const [admins, setAdmins] = useState<IEmployee[]>([]);
+  const [employees, setEmployees] = useState<IEmployee[]>([]);
   const [show, setShow] = React.useState(false);
   const handleClickPassword = () => setShow(!show);
-  const router = useRouter();
+
   const cerateUser = useMutation(
     async (user: CreateUserFormData) => {
       const response = await api.post("users", {
@@ -71,12 +89,29 @@ export default function CreateUser() {
   } = useForm({
     resolver: yupResolver(createUserFormSchema),
   });
-  const handleCreateUser: SubmitHandler<CreateUserFormData> = async (
-    values
-  ) => {
-    await cerateUser.mutateAsync(values);
-    router.push("/dashboard");
+  const handleEditUser: SubmitHandler<CreateUserFormData> = async (values) => {
+    try {
+      const user = {
+        email: email,
+        password: senha,
+        name: nome,
+        created_at: new Date(),
+      };
+      const response = await api.post("users", user);
+      console.log("awui", user);
+      console.log("aqui2", response);
+      setAdmins(response.data);
+      console.log("aqui3", response.data.user);
+
+      return response.data.user;
+    } catch (err) {
+      console.log("aqui", err);
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 3000));
   };
+  //   router.push("/dashboard");
+
   return (
     <Box>
       <Header />
@@ -84,14 +119,14 @@ export default function CreateUser() {
         <Sidebar />
         <Box
           as="form"
-          onSubmit={handleSubmit(handleCreateUser)}
+          onSubmit={handleSubmit(handleEditUser)}
           flex="1"
           borderRadius={8}
           bg="gray.50"
           p="8"
         >
           <Heading size="lg" fontWeight="normal" color="gray.900">
-            Criar usuário
+            Editar usuário
           </Heading>
           <Divider my="6" borderColor="gray.700" />
           <VStack spacing="8">
@@ -227,3 +262,21 @@ export default function CreateUser() {
     </Box>
   );
 }
+export const getStaticPaths: GetStaticProps = async ({ params }) => {
+  const { data } = await api.get(`todos/${params}`);
+  // const router = useRouter();
+  // console.log(router.query);
+  // const userid = router.query;
+  console.log(params);
+  // const usuararios = await getUser(params.id as string);
+
+  const paths = data.map((usuario) => ({
+    params: { id: usuario.id },
+  }));
+  return {
+    props: {
+      // usuararios,
+      // user: usuararios.email,
+    },
+  };
+};

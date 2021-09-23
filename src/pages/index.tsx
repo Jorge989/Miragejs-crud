@@ -9,6 +9,7 @@ import {
   Link,
 } from "@chakra-ui/react";
 import Image from "next/image";
+import NextLink from "next/link";
 import * as yup from "yup";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { RiEyeFill, RiEyeOffFill } from "react-icons/ri";
@@ -27,6 +28,7 @@ interface IEmployee {
 }
 import { Input } from "../components/Input";
 import { api } from "../services/api";
+
 const signInFormSchema = yup.object().shape({
   email: yup.string().required("E-mail obrigatório").email("E-mail inválido"),
   password: yup.string().required("Senha obrigatória"),
@@ -72,13 +74,13 @@ export default function Home() {
       console.log("aqui2", response);
       setAdmins(response.data);
       console.log("aqui3", response.data.user);
+      router.push("/login");
       return response.data.user;
     } catch (err) {
       console.log("aqui", err);
     }
 
     await new Promise((resolve) => setTimeout(resolve, 3000));
-    router.push("/login");
   };
   useEffect(() => {
     api.get(`todos`).then((response) => {
@@ -245,9 +247,9 @@ export default function Home() {
             Confirmar
           </Button>
           <Flex justifyContent="center" mt="2" textDecor="none">
-            <Link href="/login" passHref color="gray.50">
-              Já possui cadastro ?
-            </Link>
+            <NextLink href="/login" passHref>
+              <Link color="gray.50">Já possui cadastro ?</Link>
+            </NextLink>
           </Flex>
         </Flex>
       </Flex>

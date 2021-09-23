@@ -4,11 +4,12 @@ import {
   FormLabel,
   InputGroup,
   Button,
-  Link,
   InputRightElement,
   Text,
+  Link,
 } from "@chakra-ui/react";
 import Image from "next/image";
+import NextLink from "next/link";
 import * as yup from "yup";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { RiEyeFill, RiEyeOffFill } from "react-icons/ri";
@@ -29,6 +30,8 @@ const signInFormSchema = yup.object().shape({
 export default function Home() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+  const [auth, setAuth] = useState(false);
+  const [error, setError] = useState(false);
   const [show, setShow] = React.useState(false);
   const handleClickPassword = () => setShow(!show);
   const {
@@ -50,13 +53,20 @@ export default function Home() {
       console.log("aqui2", response);
 
       console.log("aqui3", response.data);
-      return response.data.user;
+
+      setAuth(true);
+      // return response.data.user;
     } catch (err) {
       console.log("aqui", err);
     }
     await new Promise((resolve) => setTimeout(resolve, 3000));
 
     console.log(values);
+    if (auth) {
+      router.push("/dashboard");
+    } else {
+      setError(true);
+    }
     // router.push("/dashboard");
   };
   return (
@@ -157,9 +167,13 @@ export default function Home() {
           Button
         </Button>
         <Flex justifyContent="center" mt="2" textDecor="none">
-          <Link href="/" passHref color="gray.50">
+          <Link href="/" passHref>
             ainda não possui cadastro ?
           </Link>
+        </Flex>
+        <Flex justify="center">
+          {" "}
+          {error && <Text color="red">Usuário inválido</Text>}
         </Flex>
       </Flex>
     </Flex>
